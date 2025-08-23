@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Calendar, User, Heart, Droplets, Clock, Phone, MapPin, Mail } from 'lucide-react';
-
+import ChatPopup from './Components/ChatPopUp';
 // Components
 const LoginForm = ({ onLogin, switchToRegister }) => {
   const [formData, setFormData] = useState({
@@ -510,7 +510,7 @@ const RegisterForm = ({ onRegister, switchToLogin }) => {
 
 const API_BASE = "http://localhost:4000";
 
-const UserTypeSelection = ({ onSuccess }) => {
+const UserTypeSelection = ({ onSuccess,setCurrentView }) => {
   const [role, setRole] = useState(null); // donor | receiver
   const [formData, setFormData] = useState({});
   const [error, setError] = useState("");
@@ -550,7 +550,7 @@ const UserTypeSelection = ({ onSuccess }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -841,7 +841,7 @@ const DonorDashboard = ({ user, onLogout }) => {
       </button>
 
       {/* Chat Window */}
-      {showChat && (
+      {/* {showChat && (
         <div className="fixed bottom-16 right-4 w-80 h-96 bg-white rounded-lg shadow-xl border">
           <div className="bg-red-600 text-white p-3 rounded-t-lg">
             <h4 className="font-semibold">Chat Support</h4>
@@ -861,7 +861,8 @@ const DonorDashboard = ({ user, onLogout }) => {
             />
           </div>
         </div>
-      )}
+      )} */}
+    _{ showChat && (<ChatPopup showChat={showChat}/>)}
     </div>
   );
 };
@@ -976,14 +977,16 @@ const ReceiverDashboard = ({ user, onLogout }) => {
 
       {/* Chat Button */}
       <button
-        onClick={() => setShowChat(!showChat)}
+        onClick={() => {setShowChat(!showChat)
+          console.log("Chat button clicked")    
+        }}
         className="fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700"
       >
         <MessageCircle className="w-6 h-6" />
       </button>
 
       {/* Chat Window */}
-      {showChat && (
+      {/* {showChat && (
         <div className="fixed bottom-16 right-4 w-80 h-96 bg-white rounded-lg shadow-xl border">
           <div className="bg-blue-600 text-white p-3 rounded-t-lg">
             <h4 className="font-semibold">Chat Support</h4>
@@ -1003,7 +1006,8 @@ const ReceiverDashboard = ({ user, onLogout }) => {
             />
           </div>
         </div>
-      )}
+      )} */}
+      {showChat && (<ChatPopup showChat={showChat}/>)}
     </div>
   );
 };
@@ -1017,6 +1021,7 @@ const App = () => {
   const handleLogin = (response) => {
     setUser(response.user);
     setToken(response.token);
+    localStorage.setItem('token', response.token);
     
     // Check if user has already selected their type
     if (response.user.isDonor) {
@@ -1029,9 +1034,12 @@ const App = () => {
   };
 
   const handleRegister = (response) => {
-    setUser(response.user);
-    setToken(response.token);
+    setUser(response.data.user);
+    setToken(response.data.token);
+    console.log(response)
+    localStorage.setItem('token', response.data.token);  
     setCurrentView('userTypeSelection');
+    console.log(localStorage.getItem('token'));
   };
 
   const handleTypeSelection = (type) => {
@@ -1073,7 +1081,7 @@ const App = () => {
       )}
       
       {currentView === 'userTypeSelection' && (
-        <UserTypeSelection onSelectType={handleTypeSelection} />
+        <UserTypeSelection onSelectType={handleTypeSelection} setCurrentView={setCurrentView} />
       )}
       
       {currentView === 'donorDashboard' && (
