@@ -9,6 +9,9 @@ export default function ChatPopup({ showChat }) {
   const [chat, setChat] = useState([
     { sender: "bot", text: "Hello! How can I help you with your treatment today?" }
   ]);
+  const user = JSON.parse(localStorage.getItem('user')) || {};
+  console.log(JSON.parse(localStorage.getItem('user')));
+  console.log(user);
 
   useEffect(() => {
     // Listen for replies from backend
@@ -25,18 +28,12 @@ export default function ChatPopup({ showChat }) {
     if (!message.trim()) return;
 
     // Add user message locally
-    setChat((prev) => [...prev, { sender: "user", text: message }]);
+    setChat((prev) => [...prev, { sender: "user", text: message,context:{user} }]);
 
     // Emit to backend
     socket.emit("userMessage", {
       message,
-      context: {
-        city: "Delhi",
-        bloodGroup: "A+",
-        receiverId: "123",
-        nextDueDate: "2025-09-01",
-        requiredUnits: 2
-      }
+      context:{...user}
     });
 
     setMessage("");

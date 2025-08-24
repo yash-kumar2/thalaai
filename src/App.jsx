@@ -14,7 +14,9 @@ const App = () => {
 
   const handleLogin = (response) => {
     setUser(response.user);
+    localStorage.setItem('user', JSON.stringify(response.user));
     //setToken(response.token);
+    console.log(localStorage.getItem('user'));
     //localStorage.setItem('token', response.token);
     
     // Check if user has already selected their type
@@ -34,6 +36,7 @@ const App = () => {
 
   const handleRegister = (response) => {
     setUser(response.data.user);
+   localStorage.setItem('user', JSON.stringify(response.user));
     setToken(response.data.token);
     console.log(response)
     localStorage.setItem('token', response.data.token);  
