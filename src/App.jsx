@@ -6,6 +6,7 @@ import RegisterForm from './pages/register';
 import UserTypeSelection from './pages/usertype';
 import DonorDashboard from './pages/donor';
 import ReceiverDashboard from './pages/reciever';
+import AdminDashboard from './pages/superadmin'; 
 const App = () => {
   const [currentView, setCurrentView] = useState('login');
   const [user, setUser] = useState(null);
@@ -13,13 +14,18 @@ const App = () => {
 
   const handleLogin = (response) => {
     setUser(response.user);
-    setToken(response.token);
-    localStorage.setItem('token', response.token);
+    //setToken(response.token);
+    //localStorage.setItem('token', response.token);
     
     // Check if user has already selected their type
-    if (response.user.isDonor) {
+    console.log(response)
+    if(response.user.isAdmin){
+      setCurrentView('adminDashboard');
+      return;
+    }
+    if (response.isDonor) {
       setCurrentView('donorDashboard');
-    } else if (response.user.isReceiver) {
+    } else if (response.isReceiver) {
       setCurrentView('receiverDashboard');
     } else {
       setCurrentView('userTypeSelection');
@@ -72,7 +78,9 @@ const App = () => {
           switchToLogin={() => setCurrentView('login')} 
         />
       )}
-      
+      {currentView === 'adminDashboard' && (
+        <AdminDashboard user={user} onLogout={handleLogout} />
+      )}
       {currentView === 'userTypeSelection' && (
         <UserTypeSelection onSelectType={handleTypeSelection} setCurrentView={setCurrentView} />
       )}

@@ -34,10 +34,13 @@ const LoginForm = ({ onLogin, switchToRegister }) => {
       const data = await response.json();
       
       // Save token to localStorage
+      console.log("xn")
+      console.log(data.token);
       localStorage.setItem('token', data.token);
       
       // Call onLogin with user data
-      onLogin(data.user);
+      onLogin(data);
+      
       
       // Optionally reset form
       setFormData({ email: '', password: '' });
